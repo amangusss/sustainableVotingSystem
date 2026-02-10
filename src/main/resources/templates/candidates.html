@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidates</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="section">
+    <div class="container">
+        <h1 class="title">Candidates</h1>
+
+        <div class="panel">
+            <h2>Filter by district</h2>
+            <div class="form-row">
+                <input type="text" id="districtFilter" placeholder="District">
+                <button id="applyFilter" type="button" class="secondary">Apply</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Vote</h2>
+            <form id="voteForm">
+                <div class="form-row">
+                    <input type="text" name="passportId" placeholder="Passport ID" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <input type="number" name="candidateId" placeholder="Candidate ID" required>
+                </div>
+                <div class="actions">
+                    <button type="submit">Vote</button>
+                </div>
+            </form>
+            <div id="voteMessage" class="message is-muted"></div>
+        </div>
+
+        <div class="panel">
+            <h2>List</h2>
+            <table id="candidatesTable" class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Party</th>
+                    <th>District</th>
+                    <th>Votes</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tableBody = document.querySelector('#candidatesTable tbody');
+    const voteForm = document.getElementById('voteForm');
+    const voteMessage = document.getElementById('voteMessage');
+    const districtFilter = document.getElementById('districtFilter');
+    const applyFilter = document.getElementById('applyFilter');
+
+    async function loadCandidates() {
+        const district = districtFilter.value.trim();
+        const query = district ? `?district=${encodeURIComponent(district)}` : '';
+        const response = await fetch(`/api/candidates${query}`);
+        const data = await response.json();
+        tableBody.innerHTML = '';
+        data.forEach(candidate => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${candidate.id}</td>
+                <td>${candidate.fullName}</td>
+                <td>${candidate.party}</td>
+                <td>${candidate.district}</td>
+                <td>${candidate.voteCount}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    applyFilter.addEventListener('click', () => {
+        loadCandidates();
+    });
+
+    voteForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        voteMessage.textContent = '...';
+        const payload = {
+            passportId: voteForm.passportId.value,
+            password: voteForm.password.value,
+            candidateId: Number(voteForm.candidateId.value)
+        };
+        const response = await fetch('/api/votes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        voteMessage.textContent = data.message || 'Done';
+        await loadCandidates();
+    });
+
+    loadCandidates();
+</script>
+</body>
+</html>

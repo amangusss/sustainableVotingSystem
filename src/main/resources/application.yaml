@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: Sustainable Voting System
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sustainable_voting_system
+    username: postgres
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+app:
+  admin:
+    username: admin
+    password: admin123
+  upload-dir: uploads
+  cache:
+    images-ttl: 10m

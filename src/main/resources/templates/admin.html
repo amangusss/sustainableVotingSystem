@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="section">
+    <div class="container">
+        <h1 class="title">Admin Panel</h1>
+
+        <div class="panel">
+            <h2>Add candidate</h2>
+            <form id="candidateForm">
+                <div class="form-row">
+                    <input type="text" name="fullName" placeholder="Full name" required>
+                    <input type="text" name="party" placeholder="Party" required>
+                    <input type="text" name="district" placeholder="District" required>
+                    <input type="text" name="photoUrl" placeholder="Photo URL (optional)">
+                    <input type="file" name="photo" accept="image/*">
+                </div>
+                <div class="actions">
+                    <button type="submit">Add</button>
+                </div>
+            </form>
+            <div id="message" class="message is-muted"></div>
+        </div>
+
+        <div class="panel">
+            <h2>Candidate list</h2>
+            <table id="candidatesTable" class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Party</th>
+                    <th>District</th>
+                    <th>Votes</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tableBody = document.querySelector('#candidatesTable tbody');
+    const candidateForm = document.getElementById('candidateForm');
+    const message = document.getElementById('message');
+
+    async function loadCandidates() {
+        const response = await fetch('/api/candidates');
+        const data = await response.json();
+        tableBody.innerHTML = '';
+        data.forEach(candidate => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${candidate.id}</td>
+                <td>${candidate.fullName}</td>
+                <td>${candidate.party}</td>
+                <td>${candidate.district}</td>
+                <td>${candidate.voteCount}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    candidateForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        message.textContent = '...';
+
+        const formData = new FormData();
+        formData.append('fullName', candidateForm.fullName.value);
+        formData.append('party', candidateForm.party.value);
+        formData.append('district', candidateForm.district.value);
+        formData.append('photoUrl', candidateForm.photoUrl.value || '');
+        if (candidateForm.photo.files.length > 0) {
+            formData.append('photo', candidateForm.photo.files[0]);
+        }
+
+        const response = await fetch('/api/admin/candidates/upload', {
+            method: 'POST',
+            body: formData
+        });
+        if (response.ok) {
+            message.textContent = 'Candidate added';
+            await loadCandidates();
+        } else {
+            const data = await response.json();
+            message.textContent = data.message || 'Error';
+        }
+    });
+
+    loadCandidates();
+</script>
+</body>
+</html>

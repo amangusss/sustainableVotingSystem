@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="section">
+    <div class="container">
+        <h1 class="title">Login</h1>
+        <div class="panel">
+            <form id="loginForm">
+                <div class="form-row">
+                    <input type="text" name="passportId" placeholder="Passport ID" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="actions">
+                    <button type="submit">Login</button>
+                </div>
+            </form>
+            <div id="message" class="message is-muted"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('loginForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        message.textContent = '...';
+
+        const payload = {
+            passportId: form.passportId.value,
+            password: form.password.value
+        };
+
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        message.textContent = data.message || 'Done';
+    });
+</script>
+</body>
+</html>

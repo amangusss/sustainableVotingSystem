@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Results</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="section">
+    <div class="container">
+        <h1 class="title">Live Results</h1>
+
+        <div class="panel">
+            <div class="form-row">
+                <input type="text" id="candidateName" placeholder="Filter by name">
+            </div>
+        </div>
+
+        <div class="panel">
+            <table id="resultsTable" class="table">
+                <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>District</th>
+                    <th>Party</th>
+                    <th>Votes</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tableBody = document.querySelector('#resultsTable tbody');
+    const candidateName = document.getElementById('candidateName');
+    const placeholder = '/images/placeholder.svg';
+
+    async function loadResults() {
+        const query = candidateName.value ? `?candidateName=${encodeURIComponent(candidateName.value)}` : '';
+        const response = await fetch(`/api/results${query}`);
+        const data = await response.json();
+        const totalVotes = data.reduce((sum, item) => sum + item.voteCount, 0) || 1;
+
+        tableBody.innerHTML = '';
+        data.forEach(result => {
+            const percent = Math.round((result.voteCount / totalVotes) * 100);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><img class="avatar" src="${result.photoUrl || placeholder}" alt="${result.fullName}"></td>
+                <td>${result.fullName}</td>
+                <td>${result.district}</td>
+                <td>${result.party}</td>
+                <td>
+                    <div class="bar">
+                        <div class="bar-fill" style="width: ${percent}%"></div>
+                    </div>
+                    <div class="bar-value">${result.voteCount} votes • ${percent}%</div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+
+    loadResults();
+    setInterval(loadResults, 1000);
+</script>
+</body>
+</html>
