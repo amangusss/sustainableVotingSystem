@@ -47,11 +47,6 @@ public class VoteServiceImpl implements VoteService {
         }
         Candidate candidate = candidateRepository.findById(request.candidateId())
                 .orElseThrow(() -> new IllegalArgumentException("Candidate not found"));
-        if (!candidate.getDistrict().equalsIgnoreCase(voter.getDistrict())) {
-            log.warn("Vote denied: district mismatch passportId={} voterDistrict={} candidateDistrict={}",
-                    request.passportId(), voter.getDistrict(), candidate.getDistrict());
-            return new SimpleMessageResponse("Вы можете голосовать только за кандидатов своего района");
-        }
 
         Vote vote = new Vote();
         vote.setVoter(voter);

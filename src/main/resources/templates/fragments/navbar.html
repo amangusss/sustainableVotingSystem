@@ -4,7 +4,13 @@
 <div th:fragment="navbar" class="navbar">
     <div class="container">
         <div class="brand">SVS</div>
-        <div>
+        <input class="nav-toggle" type="checkbox" id="navToggle" aria-label="Toggle navigation">
+        <label class="nav-toggle-label" for="navToggle" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+        <div class="nav-links" id="navLinks">
             <a th:href="@{/}">Home</a>
             <a th:href="@{/register}">Register</a>
             <a th:href="@{/login}">Login</a>
@@ -16,4 +22,3 @@
 </div>
 </body>
 </html>
-

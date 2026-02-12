@@ -79,6 +79,37 @@ body {
   text-decoration: underline;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.nav-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-toggle-label {
+  display: none;
+  width: 36px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.nav-toggle-label span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--bg);
+  margin: 4px 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
 .hero {
   padding: 56px 0 32px;
   border-bottom: 1px solid var(--line);
@@ -116,6 +147,22 @@ body {
 
 .actions {
   margin-top: 12px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.form-row > * {
+  flex: 1 1 50px;
+  min-width: 0;
+}
+
+.form-row button {
+  flex: 0 0 auto;
 }
 
 .brand {
@@ -251,8 +298,105 @@ button:hover {
     gap: 8px;
   }
 
+  .nav-toggle {
+    position: absolute;
+    right: 4vw;
+    top: 20px;
+    opacity: 0;
+  }
+
+  .nav-toggle-label {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .nav-links {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 8px;
+    display: none;
+  }
+
+  .nav-toggle:checked ~ .nav-links {
+    display: flex;
+  }
+
+  .nav-toggle:checked + .nav-toggle-label span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .nav-toggle:checked + .nav-toggle-label span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-toggle:checked + .nav-toggle-label span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .hero {
+    padding: 40px 0 24px;
+  }
+
+  .hero h1 {
+    font-size: 2.1rem;
+  }
+
+  .section {
+    padding: 24px 0;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-row > * {
+    width: 100%;
+  }
+
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
   .results-grid {
     grid-template-columns: 50px 1fr;
     row-gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: min(1100px, 90vw);
+  }
+
+  .navbar a {
+    font-size: 0.95rem;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  input {
+    font-size: 0.95rem;
+    padding: 8px 10px;
+  }
+
+  button {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 8px 12px;
+  }
+
+  .form-row {
+    gap: 8px;
   }
 }
